@@ -62,7 +62,7 @@ void prompt_user(char in_file[128]) {
 }
 
 //Extracts the name used for the VHDL array
-void parse_name(ROM* program_ROM, char line[32]) {
+void parse_name(ROM* program_ROM, char line[LINE_LEN]) {
 	char* token = strtok(line, " ");
 	if (token == NULL) {
 		printf("Expected \"name=\" at start of ASM file.\n");
@@ -83,7 +83,7 @@ void parse_name(ROM* program_ROM, char line[32]) {
 }
 
 //Extracts the type used for the VHDL array
-void parse_type(ROM* program_ROM, char line[32]) {
+void parse_type(ROM* program_ROM, char line[LINE_LEN]) {
 	char* token = strtok(line, " ");
 	if (token == NULL) {
 		printf("Expected \"type=\" at start of ASM file.\n");
@@ -105,7 +105,9 @@ void parse_type(ROM* program_ROM, char line[32]) {
 
 //Parses a line of ASM and separates it into an
 //instruction and an argument if necessary
-void parse_line(ROM* program_ROM, char line[32], int line_num, instruction **insr_list) {
+void parse_line(ROM* program_ROM, char line[LINE_LEN], int line_num, instruction **insr_list) {
+	
+	
 	//Allocate memory for new instruction and init fields to NULL
 	instruction* insr = malloc(sizeof(instruction));
 	if (insr == NULL) {
@@ -179,9 +181,38 @@ void parse_line(ROM* program_ROM, char line[32], int line_num, instruction **ins
 	
 }
 
+//Output machine code instructions formatted 
+//for a VHDL ROM to a text file
+void write_to_file(ROM* program_ROM, int line_num, instruction** insr_list) {
+	printf("\nWriting instructions to ROM_load.txt...\n\n");
+
+	//Output VHDL ROM entries to text file
+	FILE* out_file = fopen("ROM_load.txt", "w");
+	if (out_file == NULL) {
+		printf("Error: could not open file for output.\n");
+		free_on_exit(insr_list);
+		exit(EXIT_FAILURE);
+	}
+	fprintf(out_file, "constant %s : %s := (\n\n", program_ROM->name, program_ROM->type);
+
+	//Load Instructions (not including halt)
+	int memory_slot = 0;
+	for (int i = 0; i < (line_num - 3) && memory_slot < ROM_SIZE; i++) {
+		fprintf(out_file, "%d => %s,\n", memory_slot, insr_list[i]->insr);
+		memory_slot++;
+		if (insr_list[i]->arg[0] != NULL) {
+			fprintf(out_file, "%d => x\"%s\",\n", memory_slot, insr_list[i]->arg);
+			memory_slot++;
+		}
+	}
+
+	fprintf(out_file, "others => x\"00\");");
+	fclose(out_file);
+}
+
 //Frees the array of pointers to instructions
 void free_on_exit(instruction **insr_list) {
-	for (int i = 0; insr_list[i] != NULL; i++) {
+	for (int i = 0; insr_list[i] != NULL && i < ROM_SIZE; i++) {
 		free(insr_list[i]);
 	}
 }

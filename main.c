@@ -41,8 +41,9 @@ int main() {
 
 	//--------------Parse File------------------
 
-	char line[32]; //Buffer to hold line of max length 32
-	if (fgets(line, 32, asm_file) == NULL) {
+	//Retrieve name following the expected "name="
+	char line[LINE_LEN]; //Buffer to hold line of max length 32
+	if (fgets(line, LINE_LEN, asm_file) == NULL) {
 		printf("Expected \"name=\" at start of ASM file.\n");
 		exit(EXIT_FAILURE);
 	}
@@ -50,8 +51,9 @@ int main() {
 
 	parse_name(&program_ROM, line);
 
+
 	//Retrieve type following the expected "type="
-	if (fgets(line, 32, asm_file) == NULL) {
+	if (fgets(line, LINE_LEN, asm_file) == NULL) {
 		printf("Expected \"type=\" at second line of ASM file.\n");
 		exit(EXIT_FAILURE);
 	}
@@ -66,7 +68,7 @@ int main() {
 	char* token;
 	int line_num = 3; //Current line of ASM file being parsed
 
-	while (fgets(line, 32, asm_file) != EOF) {
+	while (fgets(line, LINE_LEN, asm_file) != EOF) {
 		if (line == NULL) {
 			printf("Error: Could not read line %d in ASM file\n", line_num);
 			free_on_exit(insr_list);
@@ -84,8 +86,12 @@ int main() {
 			break;
 		}
 
+		memset(line, '\0', LINE_LEN);
 		line_num++;
-		memset(line, '\0', 32);
+		if (line_num > 130) {
+			printf("Maximum ROM size exceeded.\n");
+			break;
+		}
 	}
 
 	//--------END FILE PARSING--------------------
@@ -93,34 +99,16 @@ int main() {
 
 
 	//---------WRITE INSRS TO FILE-----------------
-
-	printf("\nWriting instructions to ROM_load.txt...\n\n");
-
-	//Output VHDL ROM entries to text file
-	FILE* out_file = fopen("ROM_load.txt", "w");
-	fprintf(out_file, "constant %s : %s := (\n\n", program_ROM.name, program_ROM.type);
-
-	//Load Instructions (not including halt)
-	int memory_slot = 0;
-	for (int i = 0; i < line_num - 3; i++) {
-		fprintf(out_file, "%d => %s,\n", memory_slot, insr_list[i]->insr);
-		memory_slot++;
-		if (insr_list[i]->arg[0] != NULL) {
-			fprintf(out_file, "%d => x\"%s\",\n", memory_slot, insr_list[i]->arg);
-			memory_slot++;
-		}
-	}
-
-	fprintf(out_file, "others => x\"00\");");
-
-	//-----------END FILE OUTPUT-------------------
+	
+	write_to_file(&program_ROM, line_num, insr_list);
 
 
-	//---=----Program Cleanup and Exit-------------
+	//--------Program Cleanup and Exit-------------
 	
 	free_on_exit(insr_list);
 	fclose(asm_file);
-	fclose(out_file);
 
 	printf("%s successfully assembled into ROM_load.txt.\n\n\n\n", in_file);
+
+	return 0;
 }
