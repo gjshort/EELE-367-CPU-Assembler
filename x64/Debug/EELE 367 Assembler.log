@@ -1,10 +1,2 @@
-﻿  assembler.c
-C:\Users\griff\Desktop\Visual Studio\EELE 367 Assembler\assembler.c(203,28): warning C4047: '!=': 'int' differs in levels of indirection from 'void *'
-  main.c
-C:\Users\griff\Desktop\Visual Studio\EELE 367 Assembler\main.c(65,20): warning C4047: 'function': 'int' differs in levels of indirection from 'void *'
-C:\Users\griff\Desktop\Visual Studio\EELE 367 Assembler\main.c(65,20): warning C4024: 'memset': different types for formal and actual parameter 2
-C:\Users\griff\Desktop\Visual Studio\EELE 367 Assembler\main.c(69,41): warning C4047: '!=': 'char *' differs in levels of indirection from 'int'
-C:\Users\griff\Desktop\Visual Studio\EELE 367 Assembler\main.c(83,23): warning C4133: 'function': incompatible types - from 'instruction *' to 'const char *'
-C:\Users\griff\Desktop\Visual Studio\EELE 367 Assembler\main.c(66,8): warning C4101: 'token': unreferenced local variable
-  Generating Code...
+﻿  main.c
   EELE 367 Assembler.vcxproj -> C:\Users\griff\Desktop\Visual Studio\EELE 367 Assembler\x64\Debug\EELE 367 Assembler.exe

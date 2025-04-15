@@ -64,11 +64,10 @@ int main() {
 
 	// Parse the lines of assembly code to prepare for output
 	instruction* insr_list[ROM_SIZE];
-	memset(insr_list, NULL, ROM_SIZE);
-	char* token;
+	memset(insr_list, 0, ROM_SIZE);
 	int line_num = 3; //Current line of ASM file being parsed
 
-	while (fgets(line, LINE_LEN, asm_file) != EOF) {
+	while (fgets(line, LINE_LEN, asm_file) != NULL) {
 		if (line == NULL) {
 			printf("Error: Could not read line %d in ASM file\n", line_num);
 			free_on_exit(insr_list);
@@ -82,7 +81,7 @@ int main() {
 		//if instruction is halt, stop translating
 		//(the ptr to the halt instruction will be out of bounds
 		//of the print loop so that it won't be included in the output file
-		if (strcmp(insr_list[line_num - 3], "HALT") == 0) {
+		if (strcmp(insr_list[line_num - 3]->insr, "HALT") == 0) {
 			break;
 		}
 
