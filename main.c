@@ -19,7 +19,7 @@
 
 int main() {
 
-	//--------------INIT-----------------------
+	//--------------INIT------------------------
 
 	ROM program_ROM;
 	program_ROM.size = ROM_SIZE;
