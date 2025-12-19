@@ -3,7 +3,7 @@
 ## Purpose
 EELE 367 at MSU requires students to "load" machine code instructions into the ROM entity in VHDL for their simulated 8 bit CPU. The instructions are represented by constants in the program, so there is already no need for the raw numerical values to be entered:
 
-```
+```vhdl
 constant ROM : rom_type := (
 
 0 => LDA_IMM,
@@ -63,7 +63,8 @@ BRA 00
 HALT
 ```
 is assembled into this text in ROM_load.txt:
-```
+
+```vhdl
 constant ROM : rom_type := (
 
 0 => LDA_IMM,
